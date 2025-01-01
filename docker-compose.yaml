@@ -1,0 +1,9 @@
+version: "3.7"
+
+services:
+  questionx:
+    build:
+      context: ./
+    image: questionx/finq-backend
+    ports:
+      - "3003:3003"
