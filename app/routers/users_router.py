@@ -36,7 +36,7 @@ async def create_user_api(request: CreateUserRequest):
         account_type = 'individual'
         date_created = datetime.fromtimestamp(request.created_at / 1000, tz=timezone.utc).isoformat()  
         last_accessed = datetime.fromtimestamp(request.updated_at / 1000, tz=timezone.utc).isoformat()          
-        organization_role = None 
+        organization_role = 'owner' 
         organization_name = f"{user_id}_puesdo_org" 
         subscription_plan = 'basic'
         

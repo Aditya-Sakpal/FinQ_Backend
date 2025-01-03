@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 def create_organization(
     organization_id:str,
+    user_id:str,
     organization_name:str,
     address:str,
     date_created:str,
@@ -30,6 +31,7 @@ def create_organization(
     try:
         organization_data = {
             "organization_id": organization_id,
+            "user_id": user_id,
             "organization_name": organization_name,
             "address": address,
             "date_created": date_created,
@@ -72,3 +74,20 @@ def get_organization(organization_id: int):
     except Exception as e:
         logger.error(f"Error getting organization: {traceback.format_exc()}")
         return {"message": "Error getting organization", "error": str(e)}
+
+def delete_organization(organization_id:int):
+    """
+    This function deletes an organization from the Organizations table .
+    
+    Args:
+    - organization_id (int): The organization's ID.
+    
+    Returns:
+    - dict: The response from the Supabase API.
+    """
+    try:
+        response = supabase.table("Organizations").delete().eq("organization_id", organization_id).execute()
+        return response
+    except Exception as e:
+        logger.error(f"Error deleting organization: {traceback.format_exc()}")
+        return {"message": "Error deleting organization", "error": str(e)}
