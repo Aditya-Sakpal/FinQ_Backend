@@ -54,9 +54,7 @@ def upload_file_api(file: FileUploadRequest):
             return Response(content=f"Error creating company document : {response['error']}", status_code=400)
         
         logging.info(f"Company document created: {response}")
-        
         return response
-        
     except Exception as e:
         logger.error(f"Error uploading file: {traceback.format_exc()}")
         return Response(content=f"Error while uploading file : {e}", status_code=500)

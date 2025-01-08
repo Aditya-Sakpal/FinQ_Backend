@@ -6,7 +6,6 @@ from fastapi import APIRouter , Response
 
 from app.schemas.organizations_schema import CreateOrganizationRequest , AddUserToOrganizationRequest , DeleteOrganizationRequest
 from app.crud.organizations_crud import *
-from app.crud.users_crud import update_user , get_user
 
 router = APIRouter()
 
