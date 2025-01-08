@@ -1,5 +1,6 @@
 import logging
 import traceback
+import uuid
 
 from fastapi import APIRouter, Response
 
@@ -9,7 +10,7 @@ from app.crud.files_crud import *
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-@router.post("/upload_file")
+@router.post("/upload_file_for_new_company")
 def upload_file_api(file: FileUploadRequest):
     """
     This function creates a new file in the files table.
@@ -21,23 +22,41 @@ def upload_file_api(file: FileUploadRequest):
     - dict: The response from the Supabase API.
     """
     try:
-        response = upload_file(
-            file_id=file.file_id,
+        file_id = "file_"+str(uuid.uuid4())
+        company_id = "company_"+str(uuid.uuid4())
+        company_document_id = "company_document_"+str(uuid.uuid4())
+        
+        response = upload_new_company_document(
+            file_id=file_id,
             user_id=file.user_id,
             organization_id=file.organization_id,
-            uploaded_on=file.uploaded_on,
             file_type=file.file_type,
-            file_uri=file.file_uri,
             file_size=file.file_size,
-            file_name=file.file_name
+            file_uri=file.file_uri,
+            file_name=file.file_name,
+            status="pending",
+            company_id=company_id,
+            company_name=file.company_name,
+            company_description="",
+            primary_listing_country="India",
+            primary_operating_country="India",
+            is_custom_created=True,
+            created_by=file.user_id,
+            industry="",
+            sector="",
+            year=file.year,
+            type=file.type,
+            company_document_id=company_document_id
         )
         
         if 'error' in response:
-            logger.error(f"Error uploading file: {response['error']}")
-            return Response(content=f"Error uploading file : {response['error']}", status_code=400)
+            logger.error(f"Error creating company document: {response['error']}")
+            return Response(content=f"Error creating company document : {response['error']}", status_code=400)
         
-        logging.info(f"File uploaded: {response}")
+        logging.info(f"Company document created: {response}")
+        
         return response
+        
     except Exception as e:
         logger.error(f"Error uploading file: {traceback.format_exc()}")
         return Response(content=f"Error while uploading file : {e}", status_code=500)
@@ -63,7 +82,7 @@ async def get_all_files_api():
         logger.error(f"Error getting files: {traceback.format_exc()}")
         return Response(content=f"Error while retrieving files : {e}", status_code=500)
     
-@router.get("/get_file_by_file_id")
+@router.get("/get_file_by_file_id/{file_id}")
 async def get_file_by_id_api(file_id: str):
     """
     This function retrieves a file from the files table by its ID.
@@ -87,8 +106,8 @@ async def get_file_by_id_api(file_id: str):
         logger.error(f"Error getting file: {traceback.format_exc()}")
         return Response(content=f"Error while retreiving file by file id : {e}", status_code=500)
     
-@router.get("/get_file_by_user_id")
-async def get_file_by_user_id_api(user_id: str):
+@router.get("/get_files_by_user_id/{user_id}")
+async def get_files_by_user_id_api(user_id: str):
     """
     This function retrieves a file from the files table by its user ID.
     
@@ -99,7 +118,7 @@ async def get_file_by_user_id_api(user_id: str):
     - dict: The response from the Supabase API.
     """
     try:
-        response = get_file_by_user_id(user_id)
+        response = get_files_by_user_id(user_id)
         
         if 'error' in response:
             logger.error(f"Error getting file: {response['error']}")
@@ -110,6 +129,30 @@ async def get_file_by_user_id_api(user_id: str):
     except Exception as e:
         logger.error(f"Error getting file: {traceback.format_exc()}")
         return Response(content=f"Error while retreiving file by user id : {e}", status_code=500)
+    
+@router.get("/get_files_by_organization_id/{organization_id}")
+async def get_files_by_organization_id_api(organization_id: str):
+    """
+    This function retrieves a file from the files table by its organization ID.
+    
+    Args:
+    - organization_id (str): The organization's ID.
+    
+    Returns:
+    - dict: The response from the Supabase API.
+    """
+    try:
+        response = get_files_by_organization_id(organization_id)
+        
+        if 'error' in response:
+            logger.error(f"Error getting file: {response['error']}")
+            return Response(content=f"Error while retreiving file by organization id : {response['error']}", status_code=400)
+        
+        logging.info(f"file retrieved: {response}")
+        return response
+    except Exception as e:
+        logger.error(f"Error getting file: {traceback.format_exc()}")
+        return Response(content=f"Error while retreiving file by organization id : {e}", status_code=500)
     
 @router.put("/update_file/{file_id}")
 async def update_file_api(file_id: str, update_data: dict):

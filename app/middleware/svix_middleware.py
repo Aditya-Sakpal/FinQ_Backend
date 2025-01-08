@@ -26,6 +26,7 @@ class SvixWebhookAuthMiddleware(BaseHTTPMiddleware):
             wh = Webhook( CREATE_USER_WEBHOOK_SECRET if request.url.path == "/api/v1/create_user" else CREATE_ORGANIZATION_WEBHOOK_SECRET )
             try:
                 wh.verify(payloadString, svixHeaders)
+                logger.info("Webhook authentication successful")
             except Exception as e:
                 logger.error(f"Webhook authentication failed: {str(e)}")
                 return JSONResponse(

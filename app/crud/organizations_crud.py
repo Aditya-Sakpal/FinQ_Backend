@@ -5,9 +5,10 @@ from app.db.connect import supabase
 
 logger = logging.getLogger(__name__)
 
+
 def create_organization(
+    user_id: str,
     organization_id:str,
-    user_id:str,
     organization_name:str,
     address:str,
     date_created:str,
@@ -18,7 +19,8 @@ def create_organization(
     This function creates a new organization in the Organizations table.
     
     Args:
-    - organization_id (int): The organization's ID.
+    - user_id (str): The user's ID.
+    - organization_id (str): The organization's ID.
     - organization_name (str): The organization's name.
     - address (str): The organization's address.
     - date_created (str): The date the organization was created.
@@ -29,17 +31,15 @@ def create_organization(
     - dict: The response from the Supabase API.
     """
     try:
-        organization_data = {
-            "organization_id": organization_id,
-            "user_id": user_id,
-            "organization_name": organization_name,
-            "address": address,
-            "date_created": date_created,
-            "last_accessed": last_accessed,
-            "subscription_plan": subscription_plan,
-        }
-        response = supabase.table("Organizations").insert(organization_data).execute()
-        return response
+        return supabase.rpc("create_new_organization", {
+            "p_user_id": user_id, 
+            "p_organization_id": organization_id, 
+            "p_organization_name": organization_name, 
+            "p_address": address, 
+            "p_date_created": date_created, 
+            "p_last_accessed": last_accessed, 
+            "p_subscription_plan": subscription_plan
+        }).execute()
     except Exception as e:
         logger.error(f"Error creating organization: {traceback.format_exc()}")
         return {"message": "Error creating organization", "error": str(e)}
@@ -74,20 +74,53 @@ def get_organization(organization_id: int):
     except Exception as e:
         logger.error(f"Error getting organization: {traceback.format_exc()}")
         return {"message": "Error getting organization", "error": str(e)}
-
-def delete_organization(organization_id:int):
+    
+def add_user_to_organization(
+    user_id:str,
+    new_organization_id:str
+):
     """
-    This function deletes an organization from the Organizations table .
+    This function adds a user to an organization in the Organizations table.
     
     Args:
-    - organization_id (int): The organization's ID.
+    - user_id (str): The user's ID.
+    - new_organization_id (str): The organization's ID.
     
     Returns:
     - dict: The response from the Supabase API.
     """
     try:
-        response = supabase.table("Organizations").delete().eq("organization_id", organization_id).execute()
-        return response
+        return supabase.rpc("add_user_to_organization", {
+            "p_user_id": user_id,
+            "new_organization_id": new_organization_id
+        }).execute()
+    except Exception as e:
+        logger.error(f"Error adding user to organization: {traceback.format_exc()}")
+        return {"message": "Error adding user to organization", "error": str(e)}
+
+def delete_organization(
+        old_organization_id:str,
+        new_organization_id:str,
+        timestampz:str,
+    ):
+    """
+    This function deletes an organization from the Organizations table. It also replaces the organization_id with a new one.
+    
+    Args:
+    - old_organization_id (str): The old organization's ID.
+    - new_organization_id (str): The new organization's ID.
+    - timestampz (str): The timestamp of the deletion.
+    
+    Returns:
+    - dict: The response from the Supabase API.
+    """
+    try:
+        return supabase.rpc("delete_and_replace_organization", {
+            "old_organization_id": old_organization_id,
+            "new_pseudo_organization_id": new_organization_id,
+            "timestampz": timestampz
+        }).execute()
+        
     except Exception as e:
         logger.error(f"Error deleting organization: {traceback.format_exc()}")
         return {"message": "Error deleting organization", "error": str(e)}
