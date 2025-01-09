@@ -3,7 +3,8 @@ from datetime import datetime , timezone
 import traceback
 import uuid
 
-from fastapi import APIRouter,Response
+from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 
 from app.schemas.users_schema import CreateUserRequest , UpdateUserRequest , DeleteUserRequest
 from app.crud.users_crud import *
@@ -59,13 +60,13 @@ async def create_user_api(request: CreateUserRequest):
         
         if 'error' in response:
             logger.error(f"Error creating user: {response['error']}")
-            return Response(content=f"Error creating user : {response['error']}", status_code=400)
+            return JSONResponse(content={"error":f"Error creating user : {response['error']}"}, status_code=400)
         
-        logger.info(f"User created successfully: {response.data}")
-        return Response(content=f"User created successfully: {response.data}", status_code=200)     
+        logger.info(f"User created successfully: {user_id}")
+        return JSONResponse(content={"data": f"User created successfully : {user_id}"}, status_code=200)
     except Exception as e:
         logger.error(f"Error creating user: {traceback.format_exc()}")
-        return Response(content=f"Error while creating user : {e} ", status_code=500)
+        return JSONResponse(content={"error":f"Error while creating user : {e} "}, status_code=500)
     
     
 @router.get("/get_users")
@@ -81,13 +82,13 @@ async def get_users_api():
         
         if 'error' in response:
             logger.error(f"Error getting users: {response['error']}")
-            return Response(content=f"Error retrieving users : {response['error']}", status_code=400)
+            return JSONResponse(content={"error":f"Error retrieving users : {response['error']}"}, status_code=400)
         
         logger.info(f"Users retrieved successfully: {response.data}")
-        return Response(content=f"Users retrieved successfully: {response.data}", status_code=200)
+        return JSONResponse(content={"data": response.data}, status_code=200)
     except Exception as e:
         logger.error(f"Error getting users: {traceback.format_exc()}")
-        return Response(content=f"Error retrieving users : {e}", status_code=500)
+        return JSONResponse(content={"error":f"Error retrieving users : {e}"}, status_code=500)
     
 @router.get("/get_user/{user_id}")
 async def get_user_api(user_id: str):
@@ -105,39 +106,13 @@ async def get_user_api(user_id: str):
         
         if 'error' in response:
             logger.error(f"Error getting user: {response['error']}")
-            return Response(content=f"Error retrieving user : {response['error']}", status_code=400)
+            return JSONResponse(content={"error":f"Error retrieving user : {response['error']}"}, status_code=400)
         
         logger.info(f"User retrieved successfully: {response.data}")
-        return Response(content=f"User retrieved successfully: {response.data}", status_code=200)    
+        return JSONResponse(content={"data": response.data}, status_code=200)
     except Exception as e:
         logger.error(f"Error getting user: {traceback.format_exc()}")
-        return Response(content=f"Error retrieving user : {e}", status_code=500)
-    
-@router.put("/update_user/{user_id}")
-async def update_user_api(user_id: str, request: UpdateUserRequest):
-    """
-    This function updates a user in the Users table.
-    
-    Args:
-    - user_id (str): The user's ID.
-    - request (UpdateUserRequest): The request object containing the update data.
-    
-    Returns:
-    - dict: The response from the Supabase API.
-    """
-    try:
-        request = request.update_data
-        response = update_user(user_id, request)
-        
-        if 'error' in response:
-            logger.error(f"Error updating user: {response['error']}")
-            return Response(content=f"Error updating user : {response['error']}", status_code=400)
-        
-        logger.info(f"User updated successfully: {response.data}")
-        return Response(content=f"User updated successfully: {response.data}", status_code=200)
-    except Exception as e:
-        logger.error(f"Error updating user: {traceback.format_exc()}")
-        return Response(content=f"Error updating user : {e}", status_code=500)
+        return JSONResponse(content={"error":f"Error retrieving user : {e}"}, status_code=500)
     
 @router.put("/update_user")
 async def update_user_api(request: UpdateUserRequest):
@@ -174,13 +149,13 @@ async def update_user_api(request: UpdateUserRequest):
         
         if 'error' in response:
             logger.error(f"Error updating user: {response['error']}")
-            return Response(content=f"Error updating user : {response['error']}", status_code=400)
+            return JSONResponse(content={"error":f"Error updating user : {response['error']}"}, status_code=400)
         
         logger.info(f"User updated successfully: {response.data}")
-        return Response(content=f"User updated successfully: {response.data}", status_code=200)    
+        return JSONResponse(content={"data":f"User updated successfully: {user_id   }"}, status_code=200)    
     except Exception as e:
         logger.error(f"Error updating user: {traceback.format_exc()}")
-        return Response(content=f"Error updating user : {e}", status_code=500)
+        return JSONResponse(content={"error":f"Error updating user : {e}"}, status_code=500)
     
 @router.delete("/delete_user")
 async def delete_user_api(request: DeleteUserRequest):
@@ -200,10 +175,10 @@ async def delete_user_api(request: DeleteUserRequest):
         
         if 'error' in response:
             logger.error(f"Error deleting user: {response['error']}")
-            return Response(content=f"Error deleting user : {response['error']}", status_code=400)
+            return JSONResponse(content={"error":f"Error deleting user : {response['error']}"}, status_code=400)
         
         logger.info(f"User deleted successfully: {response.data}")
-        return Response(content=f"User deleted successfully: {response.data}", status_code=200)
+        return JSONResponse(content={"data":f"User deleted successfully: {user_id}"}, status_code=200)
     except Exception as e:
         logger.error(f"Error deleting user: {traceback.format_exc()}")
-        return Response(content=f"Error deleting user : {e}", status_code=500)
+        return JSONResponse(content={"error":f"Error deleting user : {e}"}, status_code=500)

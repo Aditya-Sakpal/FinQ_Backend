@@ -88,7 +88,7 @@ def get_files_by_user_id(user_id:str):
     - dict: The response from the Supabase API.
     """
     try:
-        response = supabase.table("Files").select("*").eq("file_owner", user_id).execute()
+        response = supabase.table("Files").select("*").eq("user_id", user_id).execute()
         return response
     except Exception as e:
         return {"message": "Error getting file", "error": str(e)}

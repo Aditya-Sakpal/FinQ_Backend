@@ -151,8 +151,9 @@ def delete_user(user_id: str):
     - dict: The response from the Supabase API.
     """
     try:
-        response = supabase.table("Users").delete().eq("user_id", user_id).execute()
-        return response
+        return supabase.rpc("delete_user",{
+            "p_user_id": user_id
+        }).execute()
     except Exception as e:
         logger.error(f"Error deleting user: {traceback.format_exc()}")
         return {"error": str(e)}

@@ -100,8 +100,6 @@ def add_user_to_organization(
 
 def delete_organization(
         old_organization_id:str,
-        new_organization_id:str,
-        timestampz:str,
     ):
     """
     This function deletes an organization from the Organizations table. It also replaces the organization_id with a new one.
@@ -115,12 +113,9 @@ def delete_organization(
     - dict: The response from the Supabase API.
     """
     try:
-        return supabase.rpc("delete_and_replace_organization", {
-            "old_organization_id": old_organization_id,
-            "new_pseudo_organization_id": new_organization_id,
-            "timestampz": timestampz
+        return supabase.rpc("delete_organization", {
+            "p_organization_id": old_organization_id,
         }).execute()
-        
     except Exception as e:
         logger.error(f"Error deleting organization: {traceback.format_exc()}")
         return {"message": "Error deleting organization", "error": str(e)}
