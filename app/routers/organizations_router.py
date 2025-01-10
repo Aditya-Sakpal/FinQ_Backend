@@ -5,7 +5,7 @@ import uuid
 from fastapi import APIRouter 
 from fastapi.responses import JSONResponse
 
-from app.schemas.organizations_schema import CreateOrganizationRequest , AddUserToOrganizationRequest , DeleteOrganizationRequest
+from app.schemas.organizations_schema import CreateOrganizationRequest , AddUserToOrganizationRequest , DeleteOrganizationRequest , UpdateOrganizationRequest
 from app.crud.organizations_crud import *
 
 router = APIRouter()
@@ -48,6 +48,7 @@ async def create_new_organization_api(request:CreateOrganizationRequest):
             logger.error(f"Error creating organization: {response['error']}")
             return JSONResponse(content={"error":f"Error creating organization : {response['error']}"}, status_code=400)
         
+        logging.info(f"Organization created: {organization_id}")
         return JSONResponse(content={"data":f"Organization created successfully : {organization_id}"}, status_code=200)
     except Exception as e:
         logger.error(f"Error creating organization: {traceback.format_exc()}")
@@ -68,6 +69,7 @@ async def get_organizations_api():
             logger.error(f"Error retrieving organizations: {response['error']}")
             return JSONResponse(content={"error":f"Error retrieving organizations : {response['error']}"}, status_code=400)
         
+        logger.info(f"Organizations retrieved successfully: {response.data}")
         return JSONResponse(content={"data":response}, status_code=200)
     except Exception as e:
         logger.error(f"Error retrieving organizations: {traceback.format_exc()}")
@@ -91,10 +93,13 @@ async def get_organization_api(organization_id: str):
             logger.error(f"Error retrieving organization: {response['error']}")
             return JSONResponse(content={"error":f"Error retrieving organization : {response['error']}"}, status_code=400)
         
-        return JSONResponse(content={"data":response.data}, status_code=200)
+        logging.info(f"Organization retrieved: {organization_id}")
+        return JSONResponse(content={"data":response}, status_code=200)
     except Exception as e:
         logger.error(f"Error retrieving organization: {traceback.format_exc()}")
         return JSONResponse(content={"error":f"Error while retrieving organization : {e}"}, status_code=500)
+    
+
     
 @router.post("/delete_organization")
 async def delete_organization_api(request:DeleteOrganizationRequest):
@@ -119,10 +124,55 @@ async def delete_organization_api(request:DeleteOrganizationRequest):
             logger.error(f"Error deleting organization: {response['error']}")
             return JSONResponse(content={"error":f"Error deleting organization : {response['error']}"}, status_code=400)
         
+        logger.info(f"Organization deleted successfully: {old_organization_id}")
         return JSONResponse(content={"data":f"Organization deleted successfully : {old_organization_id}"}, status_code=200)            
     except Exception as e:
         logger.error(f"Error deleting organization: {traceback.format_exc()}")
         return JSONResponse(content={"error":f"Error while deleting organization : {e}"}, status_code=500)    
+    
+@router.post("/update_organization")
+async def update_organization_api(request:UpdateOrganizationRequest):
+    """
+    This function updates an organization in the Organizations table.
+    
+    Args:
+    - request (UpdateOrganizationRequest): The request object containing the organization data.
+    
+    Returns:
+    - dict: The response from the Supabase API.
+    """
+    try:
+        request = request.data
+
+        logger.info(f"Updating organization: {request}")
+        
+        organization_id = request.id
+        organization_name = request.name
+        user_id = request.created_by
+        address = ''
+        date_created = datetime.fromtimestamp(request.created_at / 1000, tz=timezone.utc).isoformat()
+        last_accessed = datetime.fromtimestamp(request.updated_at / 1000, tz=timezone.utc).isoformat()
+        subscription_plan = 'basic'
+        
+        response = update_organization(
+            user_id=user_id,
+            organization_id=organization_id,
+            organization_name=organization_name,
+            address=address,
+            date_created=date_created,
+            last_accessed=last_accessed,
+            subscription_plan=subscription_plan
+        )
+        
+        if 'error' in response:
+            logger.error(f"Error updating organization: {response['error']}")
+            return JSONResponse(content={"error":f"Error updating organization : {response['error']}"}, status_code=400)
+        
+        logging.info(f"Organization updated: {organization_id}")
+        return JSONResponse(content={"data":f"Organization updated successfully : {organization_id}"}, status_code=200)
+    except Exception as e:
+        logger.error(f"Error updating organization: {traceback.format_exc()}")
+        return JSONResponse(content={"error":f"Error while updating organization : {e}"}, status_code=500)
     
 @router.post("/add_user_to_organization")
 async def add_user_to_organization_api(request:AddUserToOrganizationRequest):
@@ -146,6 +196,7 @@ async def add_user_to_organization_api(request:AddUserToOrganizationRequest):
             logger.error(f"Error updating user: {response['error']}")
             return JSONResponse(content={"error":f"Error updating user : {response['error']}"}, status_code=400)
         
+        logger.info(f"User added to organization successfully: {request.data.public_user_data.user_id}")
         return JSONResponse(content={"data":"User added to organization successfully"}, status_code=200)
     except Exception as e:
         logger.error(f"Error adding user to organization: {traceback.format_exc()}")

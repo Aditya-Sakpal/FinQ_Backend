@@ -23,6 +23,7 @@ async def get_transaction_api(transaction_id: str):
             logger.error(f"Error retrieving transaction: {response['error']}")
             return Response(content=f"Error retrieving transaction : {response['error']}", status_code=400)
         
+        logging.info(f"Transaction retrieved successfully: {transaction_id}")
         return response
     except Exception as e:
         logger.error(f"Error retrieving transaction: {traceback.format_exc()}")
@@ -46,6 +47,7 @@ async def get_transactions_of_an_organization_api(organization_id: str):
             logger.error(f"Error retrieving transactions of an organization: {response['error']}")
             return Response(content=f"Error retrieving transactions of an organization : {response['error']}", status_code=400)
         
+        logging.info(f"Transactions of an organization retrieved successfully: {organization_id}")
         return response
     except Exception as e:
         logger.error(f"Error retrieving transactions of an organization: {traceback.format_exc()}")

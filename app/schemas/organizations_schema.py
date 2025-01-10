@@ -74,3 +74,10 @@ class DeleteOrganizationRequest(BaseModel):
     object: str
     timestamp: int
     type: str
+    
+class UpdateOrganizationRequest(BaseModel):
+    data: OrganizationData
+    event_attributes: EventAttributes
+    object: str
+    timestamp: int
+    type: str

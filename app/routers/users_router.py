@@ -84,7 +84,7 @@ async def get_users_api():
             logger.error(f"Error getting users: {response['error']}")
             return JSONResponse(content={"error":f"Error retrieving users : {response['error']}"}, status_code=400)
         
-        logger.info(f"Users retrieved successfully: {response.data}")
+        logger.info(f"Users retrieved successfully: {response.data}")    
         return JSONResponse(content={"data": response.data}, status_code=200)
     except Exception as e:
         logger.error(f"Error getting users: {traceback.format_exc()}")
@@ -108,13 +108,13 @@ async def get_user_api(user_id: str):
             logger.error(f"Error getting user: {response['error']}")
             return JSONResponse(content={"error":f"Error retrieving user : {response['error']}"}, status_code=400)
         
-        logger.info(f"User retrieved successfully: {response.data}")
+        logger.info(f"User retrieved successfully: {user_id}")
         return JSONResponse(content={"data": response.data}, status_code=200)
     except Exception as e:
         logger.error(f"Error getting user: {traceback.format_exc()}")
         return JSONResponse(content={"error":f"Error retrieving user : {e}"}, status_code=500)
     
-@router.put("/update_user")
+@router.post("/update_user")
 async def update_user_api(request: UpdateUserRequest):
     """
     This function updates a user in the Users table.
@@ -151,13 +151,13 @@ async def update_user_api(request: UpdateUserRequest):
             logger.error(f"Error updating user: {response['error']}")
             return JSONResponse(content={"error":f"Error updating user : {response['error']}"}, status_code=400)
         
-        logger.info(f"User updated successfully: {response.data}")
+        logger.info(f"User updated successfully: {user_id}")
         return JSONResponse(content={"data":f"User updated successfully: {user_id   }"}, status_code=200)    
     except Exception as e:
         logger.error(f"Error updating user: {traceback.format_exc()}")
         return JSONResponse(content={"error":f"Error updating user : {e}"}, status_code=500)
     
-@router.delete("/delete_user")
+@router.post("/delete_user")
 async def delete_user_api(request: DeleteUserRequest):
     """
     This function deletes a user from the Users table.
@@ -177,7 +177,7 @@ async def delete_user_api(request: DeleteUserRequest):
             logger.error(f"Error deleting user: {response['error']}")
             return JSONResponse(content={"error":f"Error deleting user : {response['error']}"}, status_code=400)
         
-        logger.info(f"User deleted successfully: {response.data}")
+        logger.info(f"User deleted successfully: {user_id}")
         return JSONResponse(content={"data":f"User deleted successfully: {user_id}"}, status_code=200)
     except Exception as e:
         logger.error(f"Error deleting user: {traceback.format_exc()}")

@@ -98,6 +98,34 @@ def add_user_to_organization(
         logger.error(f"Error adding user to organization: {traceback.format_exc()}")
         return {"message": "Error adding user to organization", "error": str(e)}
 
+def update_organization(
+    organization_id:str,
+    organization_name:str,
+    date_created:str,
+    last_accessed:str,
+):
+    """
+    This function updates an organization in the Organizations table.
+    
+    Args:
+    - organization_id (str): The organization's ID.
+    - organization_name (str): The organization's name.
+    - date_created (str): The date the organization was created.
+    - last_accessed (str): The last time the organization accessed the application.
+    
+    Returns:
+    - dict: The response from the Supabase API.
+    """
+    try:
+        return supabase.table("Organizations").update({
+            "organization_name": organization_name,
+            "date_created": date_created,
+            "last_accessed": last_accessed
+        }).eq("organization_id", organization_id).execute()
+    except Exception as e:
+        logger.error(f"Error updating organization: {traceback.format_exc()}")
+        return {"message": "Error updating organization", "error": str(e)}
+
 def delete_organization(
         old_organization_id:str,
     ):
