@@ -56,8 +56,7 @@ def get_files():
     - dict: The response from the Supabase API.
     """
     try:
-        response = supabase.table("Files").select("*").execute()
-        return response
+        return supabase.table("Files").select("*").execute()
     except Exception as e:
         return {"message": "Error getting files", "error": str(e)}
     
@@ -72,8 +71,7 @@ def get_file_by_file_id(file_id:str):
     - dict: The response from the Supabase API.
     """
     try:
-        response = supabase.table("Files").select("*").eq("file_id", file_id).execute()
-        return response
+        return supabase.table("Files").select("*").eq("file_id", file_id).execute()
     except Exception as e:
         return {"message": "Error getting file", "error": str(e)}
     
@@ -88,8 +86,7 @@ def get_files_by_user_id(user_id:str):
     - dict: The response from the Supabase API.
     """
     try:
-        response = supabase.table("Files").select("*").eq("user_id", user_id).execute()
-        return response
+        return supabase.table("Files").select("*").eq("user_id", user_id).execute()
     except Exception as e:
         return {"message": "Error getting file", "error": str(e)}
     
@@ -104,8 +101,7 @@ def get_files_by_organization_id(organization_id:str):
     - dict: The response from the Supabase API.
     """
     try:
-        response = supabase.table("Files").select("*").eq("organization_id", organization_id).execute()
-        return response
+        return supabase.table("Files").select("*").eq("organization_id", organization_id).execute()
     except Exception as e:
         return {"message": "Error getting file", "error": str(e)}
     
@@ -124,8 +120,7 @@ def update_file(file_id:str, update_data:dict):
         if not update_data:
             raise ValueError("No data provided to update.")
 
-        response = supabase.table("Files").update(update_data).eq("file_id", file_id).execute()
-        return response
+        return supabase.table("Files").update(update_data).eq("file_id", file_id).execute()
     except Exception as e:
         return {"message": "Error updating file", "error": str(e)}
     
@@ -140,7 +135,82 @@ def delete_file(file_id:str):
     - dict: The response from the Supabase API.
     """
     try:
-        response = supabase.table("Files").delete().eq("file_id", file_id).execute()
-        return response
+        return supabase.table("Files").delete().eq("file_id", file_id).execute()
     except Exception as e:
         return {"message": "Error deleting file", "error": str(e)}
+    
+def upload_new_format(
+    user_id:str,
+    organization_id:str,
+    file_id:str,
+    file_type:str,
+    file_uri:str,
+    file_size:int,
+    file_name:str,
+    format_id:str,
+    format_name:str,
+    format_description:str,
+    format_category:str,
+    status:str,
+):
+    """
+    Uploads a new format to the Formats table.
+    
+    Args:
+    - user_id (str): The user's ID.
+    - organization_id (str): The organization's ID.
+    - file_id (str): The file's ID.
+    - file_type (str): The file's type.
+    - file_uri (str): The file's URI.
+    - file_size (int): The file's size.
+    - file_name (str): The file's name.
+    - format_id (str): The format's ID.
+    - format_name (str): The format's name.
+    - format_description (str): The format's description.
+    - format_category (str): The format's category.
+    - status (str): The status of the format.
+    
+    Returns:
+    - dict: The response from the Supabase API.
+    """
+    try:
+        return supabase.rpc("upload_new_format", {
+            "p_user_id": user_id,
+            "p_organization_id": organization_id,
+            "p_file_id": file_id,
+            "p_file_type": file_type,
+            "p_file_uri": file_uri,
+            "p_file_size": file_size,
+            "p_file_name": file_name,
+            "p_format_id": format_id,
+            "p_format_name": format_name,
+            "p_format_description": format_description,
+            "p_format_category": format_category,
+            "p_status": status,
+        }).execute()
+    except Exception as e:
+        return {"message": "Error uploading new format", "error": str(e)}
+
+def get_companies_documents(
+    organization_id: str,
+):
+    """
+    This function retrieves all companies documents from the CompaniesDocuments table
+    for the given organization_id and the global organization_id.
+
+    Args:
+    - organization_id (str): The organization's ID.
+
+    Returns:
+    - dict: The response from the Supabase API.
+    """
+    try:
+        global_org_id = "org_2rJIICfQWoZ3xNlMuLEMXVxZE8b"  # Global organization ID
+        return supabase.table("Company_Documents")\
+            .select("*")\
+            .or_(
+                f"organization_id.eq.{organization_id},organization_id.eq.{global_org_id}"
+            )\
+            .execute()
+    except Exception as e:
+        return {"message": "Error getting companies documents", "error": str(e)}

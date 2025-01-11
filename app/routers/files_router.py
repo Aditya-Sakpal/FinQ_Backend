@@ -2,16 +2,17 @@ import logging
 import traceback
 import uuid
 
-from fastapi import APIRouter, Response
+from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 
-from app.schemas.files_schema import FileUploadRequest
+from app.schemas.files_schema import UploadNewCompanyDocumentRequest,UploadNewFormatRequest
 from app.crud.files_crud import *
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 @router.post("/upload_file_for_new_company")
-def upload_file_api(file: FileUploadRequest):
+def upload_file_api(file: UploadNewCompanyDocumentRequest):
     """
     This function creates a new file in the files table.
     
@@ -51,13 +52,15 @@ def upload_file_api(file: FileUploadRequest):
         
         if 'error' in response:
             logger.error(f"Error creating company document: {response['error']}")
-            return Response(content=f"Error creating company document : {response['error']}", status_code=400)
+            return JSONResponse(content={"error":f"Error creating company document : {response['error']}"}, status_code=400)
         
         logging.info(f"Company document created file id: {file_id}")
-        return response
+        return JSONResponse(content={"data": f"Company document created file id : {file_id}"}, status_code=200)
     except Exception as e:
         logger.error(f"Error uploading file: {traceback.format_exc()}")
-        return Response(content=f"Error while uploading file : {e}", status_code=500)
+        return JSONResponse(content={"error":f"Error while uploading file : {e}"}, status_code=500)
+    
+
     
 @router.get("/get_files")
 async def get_all_files_api():
@@ -72,13 +75,13 @@ async def get_all_files_api():
         
         if 'error' in response:
             logger.error(f"Error getting files: {response['error']}")
-            return Response(content=f"Error retrieving files : {response['error']}", status_code=400)
+            return JSONResponse(content={"error":f"Error retrieving files : {response['error']}"}, status_code=400)
         
         logging.info(f"Files retrieved: {response}")
         return response
     except Exception as e:
         logger.error(f"Error getting files: {traceback.format_exc()}")
-        return Response(content=f"Error while retrieving files : {e}", status_code=500)
+        return JSONResponse(content={"error":f"Error retrieving files : {e}"}, status_code=500)
     
 @router.get("/get_file_by_file_id/{file_id}")
 async def get_file_by_id_api(file_id: str):
@@ -96,13 +99,13 @@ async def get_file_by_id_api(file_id: str):
         
         if 'error' in response:
             logger.error(f"Error getting file: {response['error']}")
-            return Response(content=f"Error retrieving file by file id : {response['error']}", status_code=400)
+            return JSONResponse(content={"data":f"Error while retreiving file by file id : {response['error']}"}, status_code=400)
         
         logging.info(f"file retrieved: {response}")
         return response
     except Exception as e:
         logger.error(f"Error getting file: {traceback.format_exc()}")
-        return Response(content=f"Error while retreiving file by file id : {e}", status_code=500)
+        return JSONResponse(content={"error":f"Error while retreiving file by file id : {e}"}, status_code=500)
     
 @router.get("/get_files_by_user_id/{user_id}")
 async def get_files_by_user_id_api(user_id: str):
@@ -120,13 +123,13 @@ async def get_files_by_user_id_api(user_id: str):
         
         if 'error' in response:
             logger.error(f"Error getting file: {response['error']}")
-            return Response(content=f"Error while retreiving file by user id : {response['error']}", status_code=400)
+            return JSONResponse(content={"error":f"Error while retreiving file by user id : {response['error']}"}, status_code=400)
         
         logging.info(f"file retrieved: {response}")
         return response
     except Exception as e:
         logger.error(f"Error getting file: {traceback.format_exc()}")
-        return Response(content=f"Error while retreiving file by user id : {e}", status_code=500)
+        return JSONResponse(content={"error":f"Error while retreiving file by user id : {e}"}, status_code=500)
     
 @router.get("/get_files_by_organization_id/{organization_id}")
 async def get_files_by_organization_id_api(organization_id: str):
@@ -144,13 +147,13 @@ async def get_files_by_organization_id_api(organization_id: str):
         
         if 'error' in response:
             logger.error(f"Error getting file: {response['error']}")
-            return Response(content=f"Error while retreiving file by organization id : {response['error']}", status_code=400)
+            return JSONResponse(content={"error":f"Error while retreiving file by organization id : {response['error']}"}, status_code=400)
         
         logging.info(f"file retrieved: {response}")
         return response
     except Exception as e:
         logger.error(f"Error getting file: {traceback.format_exc()}")
-        return Response(content=f"Error while retreiving file by organization id : {e}", status_code=500)
+        return JSONResponse(content={"error":f"Error while retreiving file by organization id : {e}"}, status_code=500)
     
 @router.put("/update_file/{file_id}")
 async def update_file_api(file_id: str, update_data: dict):
@@ -169,14 +172,14 @@ async def update_file_api(file_id: str, update_data: dict):
         
         if 'error' in response:
             logger.error(f"Error updating file: {response['error']}")
-            return Response(content=f"Error updating file : {response['error']}", status_code=400)
+            return JSONResponse(content={"error":f"Error while updating file : {response['error']}"}, status_code=400)
         
         logging.info(f"file updated: {response}")
-        return response
+        return JSONResponse(content={"data": f"File updated : {response}"}, status_code=200)
     except Exception as e:
         logger.error(f"Error updating file: {traceback.format_exc()}")
-        return Response(content=f"Error while updating file : {e}", status_code=500)
-    
+        return JSONResponse(content={"error":f"Error while updating file : {e}"}, status_code=500)
+
 @router.get("/delete_file/{file_id}")
 async def delete_file_api(file_id: str):
     """
@@ -193,10 +196,73 @@ async def delete_file_api(file_id: str):
         
         if 'error' in response:
             logger.error(f"Error deleting file: {response['error']}")
-            return Response(content=f"Error deleting file : {response['error']}", status_code=400)
-        
+            return JSONResponse(content={"error":f"Error while while file : {response['error']}"}, status_code=400)
+            
         logging.info(f"file deleted: {response}")
-        return response
+        return JSONResponse(content={"data": f"File deleted : {response}"}, status_code=200)
     except Exception as e:
         logger.error(f"Error deleting file: {traceback.format_exc()}")
-        return Response(content=f"Error while while file : {e}", status_code=500)
+        return JSONResponse(content={"error":f"Error while deleting file : {e}"}, status_code=500)
+    
+@router.post("/upload_new_format")
+async def upload_new_format_api(request:UploadNewFormatRequest):
+    """
+    This function uploads a new format to the formats table.
+    
+    Args:
+    - request (UploadNewFormatRequest): The request object.
+    
+    Returns:
+    - dict: The response from the Supabase API.
+    """
+    try:
+        format_id = "format_"+str(uuid.uuid4())
+        
+        response = upload_new_format(
+            user_id = request.user_id,
+            organization_id = request.organization_id,
+            file_id = request.file_id,
+            file_type = request.file_type,
+            file_uri = request.file_uri,
+            file_size = request.file_size,
+            file_name = request.file_name,
+            format_id = format_id,
+            format_name = request.format_name,
+            format_description = request.format_description,
+            format_category = request.format_category,
+            status='pending'
+        )
+        
+        if 'error' in response:
+            logger.error(f"Error uploading new format: {response['error']}")
+            return JSONResponse(content={"error":f"Error uploading new format : {response['error']}"}, status_code=400)
+        
+        logging.info(f"New format uploaded: {format_id}")
+        return JSONResponse(content={"data": f"New format uploaded : {format_id}"}, status_code=200)
+    except Exception as e:
+        logger.error(f"Error uploading new format: {traceback.format_exc()}")
+        return JSONResponse(content={"error":f"Error while uploading new format : {e}"}, status_code=500)
+    
+@router.get("/get_companies_documents/{organization_id}")
+async def get_companies_documents_api(organization_id:str):
+    """
+    This function retrieves all company documents from the CompaniesDocuments table.
+    
+    Args:
+    - organization_id (str): The organization's ID.
+    
+    Returns:
+    - dict: The response from the Supabase API.
+    """
+    try:
+        response = get_companies_documents(organization_id)
+        
+        if 'error' in response:
+            logger.error(f"Error getting company documents: {response['error']}")
+            return JSONResponse(content={"error":f"Error retrieving company documents : {response['error']}"}, status_code=400)
+        
+        logging.info(f"Company documents retrieved: {response}")
+        return response
+    except Exception as e:
+        logger.error(f"Error getting company documents: {traceback.format_exc()}")
+        return JSONResponse(content={"error":f"Error retrieving company documents : {e}"}, status_code=500)

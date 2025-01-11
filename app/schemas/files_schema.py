@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class FileUploadRequest(BaseModel):
+class UploadNewCompanyDocumentRequest(BaseModel):
     file_name: str
     file_type: str
     file_size: int
@@ -10,3 +10,15 @@ class FileUploadRequest(BaseModel):
     company_name : str
     year : int
     type : str
+    
+class UploadNewFormatRequest(BaseModel):
+    user_id: str
+    organization_id: str
+    file_id:str
+    file_type:str
+    file_uri:str
+    file_size:int
+    file_name:str
+    format_name:str
+    format_description:str
+    format_category:str

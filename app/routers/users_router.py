@@ -34,7 +34,6 @@ async def create_user_api(request: CreateUserRequest):
         email_address = request.email_addresses[0].email_address if request.email_addresses else None
         phone_number = request.phone_numbers[0] if request.phone_numbers else None 
         address = None  
-        account_type = 'individual'
         date_created = datetime.fromtimestamp(request.created_at / 1000, tz=timezone.utc).isoformat()  
         last_accessed = datetime.fromtimestamp(request.updated_at / 1000, tz=timezone.utc).isoformat()          
         organization_role = 'owner' 
@@ -50,7 +49,6 @@ async def create_user_api(request: CreateUserRequest):
             email_address=email_address,
             phone_number=phone_number,
             address=address,
-            account_type=account_type,
             subscription_plan=subscription_plan,
             date_created=date_created,
             last_accessed=last_accessed,

@@ -14,7 +14,6 @@ def create_user(
     email_address:str,
     phone_number:str,
     address:str,
-    account_type:str,
     subscription_plan:str,
     date_created:str,
     last_accessed:str,
@@ -33,7 +32,6 @@ def create_user(
         - email_address (str): The user's email address.
         - phone_number (str): The user's phone number.
         - address (str): The user's address.
-        - account_type (str): The user's account type.
         - subscription_plan (str): The user's subscription plan.
         - date_created (str): The date the user was created.
         - last_accessed (str): The last time the user accessed the application.
@@ -55,7 +53,6 @@ def create_user(
             "p_email_address": email_address,
             "p_phone_number": phone_number,
             "p_user_address": address,
-            "p_account_type": account_type,
             "p_subscription_plan": subscription_plan,
             "p_date_created": date_created,
             "p_last_accessed": last_accessed,
