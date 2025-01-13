@@ -1,7 +1,7 @@
 import traceback
 import uuid
 
-from fastapi import APIRouter , Response
+from fastapi import APIRouter 
 from fastapi.responses import JSONResponse
 from app.crud.transactions_crud import *
 from app.schemas.transaction_schema import UpdatePlanRequest
@@ -11,6 +11,13 @@ router = APIRouter()
 @router.post("/update_plan")
 async def update_plan_api(request: UpdatePlanRequest):
     """
+    This function updates a transaction in the Transactions table.
+    
+    Args:
+    - request (UpdatePlanRequest): The request body.
+    
+    Returns:
+    - dict: The response from the Supabase API.
     """
     try:
         transaction_id = "transaction_"+str(uuid.uuid4())
@@ -41,7 +48,7 @@ async def update_plan_api(request: UpdatePlanRequest):
         return JSONResponse(content={"data": f"Transaction updated successfully {transaction_id}"}, status_code=200)
     except Exception as e:
         logger.error(f"Error updating transaction: {traceback.format_exc()}")
-        return Response(content=f"Error while updating transaction : {e}", status_code=500)
+        return JSONResponse(content={"error": f"Error while updating transaction : {e}"}, status_code=500)
 
 @router.get("/get_transaction/{transaction_id}")
 async def get_transaction_api(transaction_id: str):
@@ -59,13 +66,13 @@ async def get_transaction_api(transaction_id: str):
         
         if 'error' in response:
             logger.error(f"Error retrieving transaction: {response['error']}")
-            return Response(content=f"Error retrieving transaction : {response['error']}", status_code=400)
+            return JSONResponse(content={"error": f"Error retrieving transaction : {response['error']}"}, status_code=400)
         
         logging.info(f"Transaction retrieved successfully: {transaction_id}")
         return response
     except Exception as e:
         logger.error(f"Error retrieving transaction: {traceback.format_exc()}")
-        return Response(content=f"Error while retrieving transaction : {e}", status_code=500)
+        return JSONResponse(content={"error": f"Error while retrieving transaction : {e}"}, status_code=500)
 
 @router.get("/get_transactions_of_an_organization/{organization_id}")
 async def get_transactions_of_an_organization_api(organization_id: str):
@@ -83,10 +90,10 @@ async def get_transactions_of_an_organization_api(organization_id: str):
         
         if 'error' in response:
             logger.error(f"Error retrieving transactions of an organization: {response['error']}")
-            return Response(content=f"Error retrieving transactions of an organization : {response['error']}", status_code=400)
+            return JSONResponse(content={"error": f"Error retrieving transactions of an organization : {response['error']}"}, status_code=400)
         
         logging.info(f"Transactions of an organization retrieved successfully: {organization_id}")
         return response
     except Exception as e:
         logger.error(f"Error retrieving transactions of an organization: {traceback.format_exc()}")
-        return Response(content=f"Error while retrieving transactions of an organization : {e}", status_code=500)
+        return JSONResponse(content={"error": f"Error while retrieving transactions of an organization : {e}"}, status_code=500)

@@ -55,6 +55,15 @@ def create_company(
 def get_companies(
     id:str
 ):
+    """
+    This function retrieves a company from the Companies table.
+    
+    Args:
+    - id (str): The company's ID.
+    
+    Returns:
+    - dict: The response from the Supabase API.
+    """
     try:
         return supabase.rpc("fetch_companies",{
             "p_id": id

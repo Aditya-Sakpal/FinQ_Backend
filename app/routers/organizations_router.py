@@ -1,6 +1,5 @@
 from datetime import datetime , timezone
 import traceback
-import uuid
 
 from fastapi import APIRouter 
 from fastapi.responses import JSONResponse
@@ -164,7 +163,8 @@ async def delete_organization_api(request:DeleteOrganizationRequest):
         return JSONResponse(content={"data":f"Organization deleted successfully : {old_organization_id}"}, status_code=200)            
     except Exception as e:
         logger.error(f"Error deleting organization: {traceback.format_exc()}")
-        return JSONResponse(content={"error":f"Error while deleting organization : {e}"}, status_code=500)    
+        return JSONResponse(content={"error":f"Error while deleting organization : {e}"}, status_code=500)  
+      
 @router.post("/add_user_to_organization")
 async def add_user_to_organization_api(request:AddUserToOrganizationRequest):
     """

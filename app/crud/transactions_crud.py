@@ -13,6 +13,19 @@ def update_plan(
     details: dict,
     status: str,
 ):
+    """
+    This function updates a transaction in the Transactions table.
+    
+    Args:
+    - transaction_id (int): The transaction's ID.
+    - user_id (int): The user's ID.
+    - organization_id (int): The organization's ID.
+    - details (dict): The transaction's details.
+    - status (str): The transaction's status.
+    
+    Returns:
+    - dict: The response from the Supabase API.
+    """
     try :
         return supabase.rpc("update_plan",{
             "p_transaction_id": transaction_id,
