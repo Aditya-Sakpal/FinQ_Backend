@@ -6,6 +6,25 @@ from app.db.connect import supabase
 logger = logging.getLogger(__name__)
 
 
+def update_plan(
+    transaction_id: str,
+    user_id:str,
+    organization_id: str,
+    details: dict,
+    status: str,
+):
+    try :
+        return supabase.rpc("update_plan",{
+            "p_transaction_id": transaction_id,
+            "p_user_id": user_id,
+            "p_organization_id": organization_id,
+            "p_details": details,
+            "p_status": status,
+        }).execute()
+    except Exception as e:
+        logger.error(f"Error inserting transaction: {traceback.format_exc()}")
+        return {"message": "Error inserting transaction", "error": str(e)}
+
 def get_transaction(
     transaction_id: str,
 ):

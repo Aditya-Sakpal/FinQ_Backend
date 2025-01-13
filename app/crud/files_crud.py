@@ -47,6 +47,39 @@ def upload_new_company_document(
         }).execute()
     except Exception as e:
         return {"message": "Error uploading new company document", "error": str(e)}
+
+def upload_existing_company_document(
+    user_id:str,
+    organization_id:str,
+    file_id:str,
+    file_type:str,
+    file_size:str,
+    file_uri:str,
+    file_name:str,
+    status:str,
+    company_id:str,
+    company_document_id:str,
+    year:str,
+    type:str
+):
+    try:
+        return supabase.rpc("existing_company_upload", {
+            "p_user_id": user_id,
+            "p_organization_id": organization_id,
+            "p_file_id": file_id,
+            "p_file_type": file_type,
+            "p_file_size": file_size,
+            "p_file_uri": file_uri,
+            "p_file_name": file_name,
+            "p_status": status,
+            "p_company_id": company_id,
+            "p_company_document_id": company_document_id,
+            "p_created_by": user_id,
+            "p_year": year,
+            "p_type": type
+        }).execute()
+    except Exception as e:
+        return {"message": "Error uploading existing company document", "error": str(e)}  
     
 def get_files():
     """
@@ -192,25 +225,20 @@ def upload_new_format(
         return {"message": "Error uploading new format", "error": str(e)}
 
 def get_companies_documents(
-    organization_id: str,
+    id: str,
 ):
     """
-    This function retrieves all companies documents from the CompaniesDocuments table
-    for the given organization_id and the global organization_id.
-
+    This function retrieves all companies documents from the Company_Documents table.
+    
     Args:
-    - organization_id (str): The organization's ID.
+    - id (str): The organization's ID or user's ID .
 
     Returns:
-    - dict: The response from the Supabase API.
+    - dict: The response from the Supabase API. 
     """
     try:
-        global_org_id = "org_2rJIICfQWoZ3xNlMuLEMXVxZE8b"  # Global organization ID
-        return supabase.table("Company_Documents")\
-            .select("*")\
-            .or_(
-                f"organization_id.eq.{organization_id},organization_id.eq.{global_org_id}"
-            )\
-            .execute()
+        return supabase.rpc("fetch_company_documents", {
+            "p_id": id,
+        }).execute()
     except Exception as e:
         return {"message": "Error getting companies documents", "error": str(e)}

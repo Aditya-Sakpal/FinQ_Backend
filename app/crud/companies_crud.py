@@ -51,3 +51,13 @@ def create_company(
         return response 
     except Exception as e:
         return {"message": "Error creating company", "error": str(e)}
+    
+def get_companies(
+    id:str
+):
+    try:
+        return supabase.rpc("fetch_companies",{
+            "p_id": id
+        }).execute()
+    except Exception as e:
+        return {"message": "Error getting companies", "error": str(e)}

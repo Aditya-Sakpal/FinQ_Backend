@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.utils.constants import ALLOWED_ORIGINS
-from app.routers import files_router, organizations_router, users_router , transactions_router 
+from app.routers import files_router, organizations_router, users_router , transactions_router , companies_router
 from app.middleware.clerk_middleware import ClerkAuthMiddleware
 from app.middleware.svix_middleware import SvixWebhookAuthMiddleware
 
@@ -40,6 +40,7 @@ app.include_router(users_router.router, prefix="/api/v1")
 app.include_router(organizations_router.router, prefix="/api/v1")
 app.include_router(files_router.router, prefix="/api/v1")
 app.include_router(transactions_router.router, prefix="/api/v1")
+app.include_router(companies_router.router, prefix="/api/v1")
 
 if __name__ == "__main__":
     import uvicorn
