@@ -72,5 +72,3 @@ uvicorn main:app --reload
 
 ## Deployed version 
 https://finqbackendtest.wonderfuldesert-c038cc22.westus2.azurecontainerapps.io/
-
-

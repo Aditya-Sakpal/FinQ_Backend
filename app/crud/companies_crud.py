@@ -70,3 +70,22 @@ def get_companies(
         }).execute()
     except Exception as e:
         return {"message": "Error getting companies", "error": str(e)}
+
+def fetch_files_n_companies(
+    user_id:str
+):
+    """
+    This function retrieves all files and companies of a specific user from the Files and Companies tables.
+    
+    Args:
+    - user_id (str): The user's ID.
+    
+    Returns:
+    - dict: The response from the Supabase API.
+    """
+    try:
+        return supabase.rpc("fetch_files_n_companies",{
+            "p_user_id": user_id
+        }).execute()
+    except Exception as e:
+        return {"message": "Error fetching files and companies", "error": str(e)}
