@@ -37,6 +37,7 @@ pydantic_core
 PyJWT
 python-dateutil
 realtime
+requests
 six
 svix
 sniffio
