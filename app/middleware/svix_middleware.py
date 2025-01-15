@@ -4,7 +4,7 @@ from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 
-from credentials import CREATE_USER_WEBHOOK_SECRET, CREATE_ORGANIZATION_WEBHOOK_SECRET
+from app.utils.credentials import CREATE_USER_WEBHOOK_SECRET, CREATE_ORGANIZATION_WEBHOOK_SECRET
 
 logger = logging.getLogger(__name__)
 

@@ -6,7 +6,7 @@ from starlette.responses import JSONResponse
 from clerk_backend_api.jwks_helpers import AuthenticateRequestOptions
 from clerk_backend_api import Clerk
 
-from credentials import CLERK_SECRET_KEY
+from app.utils.credentials import CLERK_SECRET_KEY
 from app.utils.constants import CLERK_ALLOWED_PARTIES
 
 logger = logging.getLogger(__name__)
