@@ -1,10 +1,10 @@
 from datetime import datetime , timezone
 import traceback
 
-from fastapi import APIRouter 
+from fastapi import APIRouter , Request
 from fastapi.responses import JSONResponse
 
-from app.schemas.organizations_schema import CreateOrganizationRequest , AddUserToOrganizationRequest , DeleteOrganizationRequest , UpdateOrganizationRequest
+from app.schemas.organizations_schema import CreateOrganizationRequest, DeleteOrganizationRequest , UpdateOrganizationRequest , RemoveUserFromOrganizationRequest
 from app.crud.organizations_crud import *
 
 router = APIRouter()
@@ -164,31 +164,84 @@ async def delete_organization_api(request:DeleteOrganizationRequest):
     except Exception as e:
         logger.error(f"Error deleting organization: {traceback.format_exc()}")
         return JSONResponse(content={"error":f"Error while deleting organization : {e}"}, status_code=500)  
-      
+    
 @router.post("/add_user_to_organization")
-async def add_user_to_organization_api(request:AddUserToOrganizationRequest):
+async def add_user_to_organization_api(request: Request):
     """
     This function adds a user to an organization in the Organizations table.    
     
     Args:
-    - request (AddUserToOrganizationRequest): The request object containing the organization membership data.
+    - request (Request): The request object containing the organization membership data.
     
     Returns:
-    - dict: The response from the Supabase API.
+    - JSONResponse: The response indicating the outcome of the operation.
     """
     try:
-        logger.info(f"Adding user to organization: {request}")        
+        request_data = await request.json()  # Parse the JSON body from the request
+        logger.info(f"Adding user to organization: {request_data}")
+        
+        # Extract necessary fields with fallback for missing keys
+        new_organization_id = request_data.get('data').get("organization", {}).get("id")
+        user_id = request_data.get('data').get("public_user_data", {}).get("user_id")
+        
+        if not new_organization_id or not user_id:
+            return JSONResponse(
+                content={"error": "Missing required fields: 'organization.id' or 'public_user_data.user_id'"},
+                status_code=400,
+            )
+        
         response = add_user_to_organization(
-            new_organization_id=request.data.organization.id,
-            user_id=request.data.public_user_data.user_id
+            new_organization_id=new_organization_id,
+            user_id=user_id,
         )
         
         if 'error' in response:
             logger.error(f"Error updating user: {response['error']}")
-            return JSONResponse(content={"error":f"Error updating user : {response['error']}"}, status_code=400)
+            return JSONResponse(content={"error": f"Error updating user: {response['error']}"}, status_code=400)
         
-        logger.info(f"User added to organization successfully: {request.data.public_user_data.user_id}")
-        return JSONResponse(content={"data":"User added to organization successfully"}, status_code=200)
+        logger.info(f"User added to organization successfully: {user_id}")
+        return JSONResponse(content={"data": "User added to organization successfully"}, status_code=200)
+    
     except Exception as e:
         logger.error(f"Error adding user to organization: {traceback.format_exc()}")
-        return JSONResponse(content={"error":f"Error while adding user to organization : {e}"},status_code=500)
+        return JSONResponse(content={"error": f"Error while adding user to organization: {e}"}, status_code=500)
+
+@router.post("/remove_user_from_organization")
+async def remove_user_from_organization_api(request: Request):
+    """
+    This function removes a user from an organization in the Organizations table.
+    
+    Args:
+    - request (Request): The request object containing the organization membership data.
+    
+    Returns:
+    - JSONResponse: The response indicating the outcome of the operation.
+    """
+    try:
+        request_data = await request.json()  
+        logger.info(f"Removing user from organization: {request_data}")
+        
+        organization_id = request_data.get('data').get("organization", {}).get("id")
+        user_id = request_data.get('data').get("public_user_data", {}).get("user_id")
+        
+        if not organization_id or not user_id:
+            return JSONResponse(
+                content={"error": "Missing required fields: 'organization.id' or 'public_user_data.user_id'"},
+                status_code=400,
+            )
+        
+        response = remove_user_from_organization(
+            organization_id=organization_id,
+            user_id=user_id,
+        )
+        
+        if 'error' in response:
+            logger.error(f"Error removing user from organization: {response['error']}")
+            return JSONResponse(content={"error": f"Error removing user from organization: {response['error']}"}, status_code=400)
+        
+        logger.info(f"User removed from organization successfully: {user_id}")
+        return JSONResponse(content={"data": "User removed from organization successfully"}, status_code=200)
+    
+    except Exception as e:
+        logger.error(f"Error removing user from organization: {traceback.format_exc()}")
+        return JSONResponse(content={"error": f"Error while removing user from organization: {e}"}, status_code = 500)

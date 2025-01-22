@@ -9,7 +9,8 @@ class UploadNewCompanyDocumentRequest(BaseModel):
     organization_id: str
     company_name : str
     year : int
-    type : str
+    document_type : str
+    selection_type : str
 
 class UploadExistingCompanyDocumentRequest(BaseModel):
     file_name: str
@@ -20,4 +21,5 @@ class UploadExistingCompanyDocumentRequest(BaseModel):
     organization_id: str
     company_id:str
     year : int
-    type : str
+    document_type : str
+    selection_type : str

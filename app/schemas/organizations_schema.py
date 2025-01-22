@@ -12,29 +12,29 @@ class EventAttributes(BaseModel):
 
 
 class Organization(BaseModel):
-    admin_delete_enabled: bool
+    admin_delete_enabled: Optional[bool]
     created_at: int
-    created_by: Optional[str] 
-    has_image: bool
+    created_by: Optional[str]
+    has_image: Optional[bool]
     id: str
     image_url: Optional[HttpUrl]
     logo_url: Optional[HttpUrl]
-    max_allowed_memberships: int
-    members_count: int
+    max_allowed_memberships: Optional[int]
+    members_count: Optional[int]
     name: str
     object: str
-    pending_invitations_count: int
+    pending_invitations_count: Optional[int]
     public_metadata: Dict[str, Any]
     slug: str
     updated_at: int
 
 
 class PublicUserData(BaseModel):
-    first_name: str
-    has_image: bool
+    first_name: Optional[str]
+    has_image: Optional[bool]
     identifier: str
     image_url: Optional[HttpUrl]
-    last_name: str
+    last_name: Optional[str]
     profile_image_url: Optional[HttpUrl]
     user_id: str
 
@@ -44,15 +44,12 @@ class OrganizationMembershipData(BaseModel):
     id: str
     object: str
     organization: Organization
-    permissions: List[str]
-    public_metadata: Dict[str, Any]
     public_user_data: PublicUserData
     role: str
-    role_name: str
     updated_at: int
 
 
-class AddUserToOrganizationRequest(BaseModel):
+class RemoveUserFromOrganizationRequest(BaseModel):
     data: OrganizationMembershipData
     event_attributes: EventAttributes
     object: str
@@ -71,6 +68,14 @@ class OrganizationData(BaseModel):
     public_metadata: Dict[str, Any]
     slug: str
     updated_at: int
+
+
+class AddUserToOrganizationRequest(BaseModel):
+    data: OrganizationMembershipData
+    event_attributes: EventAttributes
+    object: str
+    timestamp: int
+    type: str
 
 
 class CreateOrganizationRequest(BaseModel):

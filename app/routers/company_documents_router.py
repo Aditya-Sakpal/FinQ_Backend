@@ -70,7 +70,8 @@ def upload_file_api(request: UploadNewCompanyDocumentRequest, background_tasks: 
             industry="",
             sector="",
             year=request.year,
-            type=request.type,
+            document_type=request.document_type,
+            selection_type=request.selection_type,
             company_document_id=company_document_id
         )
         
@@ -89,7 +90,7 @@ def upload_file_api(request: UploadNewCompanyDocumentRequest, background_tasks: 
 
     
 @router.post("/upload_file_for_existing_company")
-def upload_file_for_existing_company_api(request: UploadExistingCompanyDocumentRequest):
+def upload_file_for_existing_company_api(request: UploadExistingCompanyDocumentRequest, background_tasks: BackgroundTasks):
     """
     This function creates a new file in the files table.
     
@@ -115,12 +116,15 @@ def upload_file_for_existing_company_api(request: UploadExistingCompanyDocumentR
             company_id=request.company_id,
             company_document_id=company_document_id,
             year=request.year,
-            type=request.type
+            document_type=request.document_type,
+            selection_type=request.selection_type
         )
         
         if 'error' in response:
             logger.error(f"Error creating company document: {response['error']}")
             return JSONResponse(content={"error":f"Error creating company document : {response['error']}"}, status_code=400)
+        
+        background_tasks.add_task(send_request_to_ai_backend, file_id, company_document_id)
         
         logging.info(f"Company document created file id: {file_id}")
         return JSONResponse(content={"data": f"Company document created file id : {file_id}"}, status_code=200)

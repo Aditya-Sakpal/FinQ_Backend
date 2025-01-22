@@ -98,6 +98,29 @@ def add_user_to_organization(
         logger.error(f"Error adding user to organization: {traceback.format_exc()}")
         return {"message": "Error adding user to organization", "error": str(e)}
 
+def remove_user_from_organization(
+    user_id:str,
+    organization_id:str
+):
+    """
+    This function removes a user from an organization in the Organizations table.
+    
+    Args:
+    - user_id (str): The user's ID.
+    - organization_id (str): The organization's ID.
+    
+    Returns:
+    - dict: The response from the Supabase API.
+    """
+    try:
+        return supabase.rpc("remove_user_from_organization", {
+            "p_user_id": user_id,
+            "p_organization_id": organization_id
+        }).execute()
+    except Exception as e:
+        logger.error(f"Error removing user from organization: {traceback.format_exc()}")
+        return {"message": "Error removing user from organization", "error": str(e)}
+
 def update_organization(
     organization_id:str,
     organization_name:str,

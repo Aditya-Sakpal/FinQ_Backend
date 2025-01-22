@@ -19,7 +19,8 @@ def upload_new_company_document(
     industry:str,
     sector:str,
     year:int,
-    type:str,
+    document_type:str,
+    selection_type:str,
     company_document_id:str
 ):
     try:
@@ -42,7 +43,8 @@ def upload_new_company_document(
             "p_industry": industry,
             "p_sector": sector,
             "p_year": year,
-            "p_type": type,
+            "p_document_type": document_type,
+            "p_selection_type": selection_type,
             "p_company_document_id": company_document_id
         }).execute()
     except Exception as e:
@@ -60,8 +62,9 @@ def upload_existing_company_document(
     company_id:str,
     company_document_id:str,
     year:str,
-    type:str
-):
+    document_type:str,
+    selection_type:str
+    ):
     try:
         return supabase.rpc("existing_company_upload", {
             "p_user_id": user_id,
@@ -76,7 +79,8 @@ def upload_existing_company_document(
             "p_company_document_id": company_document_id,
             "p_created_by": user_id,
             "p_year": year,
-            "p_type": type
+            "p_document_type": document_type,
+            "p_selection_type": selection_type
         }).execute()
     except Exception as e:
         return {"message": "Error uploading existing company document", "error": str(e)}  
